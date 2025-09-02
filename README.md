@@ -74,7 +74,7 @@ deg <- subset(res_Low_vs_High, padj < 0.05 & abs(log2FoldChange) > 1)
 # Export all DEGs
 write.csv(deg, "DEG_Low_vs_High_strict.csv")
 ```
-![Check out the file: DEG_Low_vs_High_strict.csv](DEG_Low_vs_High_strict.csv)
+[Check out the file: DEG_Low_vs_High_strict.csv](DEG_Low_vs_High_strict.csv)
 
 
 # 6. Separate up- and down-regulated DEGs
@@ -89,8 +89,8 @@ write.csv(deg_up, "Up_DEG_Low_vs_High_strict.csv", row.names = FALSE)
 write.csv(deg_down, "Down_DEG_Low_vs_High_strict.csv", row.names = FALSE)
 ```
 
-![Check out the file: Up_DEG_Low_vs_High_strict.csv](Up_DEG_Low_vs_High_strict.csv)
-![Check out the file: Down_DEG_Low_vs_High_strict.csv](Down_DEG_Low_vs_High_strict.csv)
+[Check out the file: Up_DEG_Low_vs_High_strict.csv](Up_DEG_Low_vs_High_strict.csv)
+[Check out the file: Down_DEG_Low_vs_High_strict.csv](Down_DEG_Low_vs_High_strict.csv)
 
 
 ## 7. Load annotation file
