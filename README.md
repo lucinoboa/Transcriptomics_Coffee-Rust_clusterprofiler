@@ -476,3 +476,29 @@ print(summary_table, n=21)
 ```
 
 [Check out the file: Summary_COG_categories_Low_vs_High.csv](Summary_COG_categories_Low_vs_High.csv)
+```r
+# A tibble: 21 × 4
+   COG_name                                                     Universe    Up  Down
+   <chr>                                                           <int> <int> <int>
+ 1 Function unknown                                                13943   712  1332
+ 2 Signal transduction mechanisms                                   4176   235   452
+ 3 Replication, recombination and repair                            3998    55    92
+ 4 Posttranslational modification, protein turnover, chaperones     3065   126   346
+ 5 Transcription                                                    2941   204   205
+ 6 Secondary metabolites biosynthesis, transport and catabolism     2059   191   236
+ 7 Carbohydrate transport and metabolism                            1974   179   222
+ 8 Amino acid transport and metabolism                              1621   101   146
+ 9 Translation, ribosomal structure and biogenesis                  1451    32   195
+10 Intracellular trafficking, secretion, vesicular transport        1127    70    62
+11 Lipid transport and metabolism                                   1080    82    89
+12 Energy production and conversion                                  940    73   174
+13 Inorganic ion transport and metabolism                            911    88   108
+14 Cell cycle control, cell division, chromosome partitioning        576    12    21
+15 Coenzyme transport and metabolism                                 533    28    92
+16 Defense mechanisms                                                432    33    54
+17 Cytoskeleton                                                      367    18    22
+18 Nucleotide transport and metabolism                               305    29    39
+19 Cell wall/membrane/envelope biogenesis                            297    16    46
+20 Nuclear structure                                                  13     1     3
+21 Extracellular structures                                            4     0     1
+```
