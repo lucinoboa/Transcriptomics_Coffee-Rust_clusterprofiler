@@ -470,11 +470,11 @@ summary_table <- universe_summary %>%
   replace(is.na(.), 0) %>%
   arrange(desc(Universe))
 
-write_csv(summary_table, "Summary_COG_categories_Low_vs_High.csv")
+write_csv(summary_table, "Summary_COG_categories_G2_vs_G1.csv")
 print(summary_table, n=21)
 ```
 
-[Check out the file: Summary_COG_categories_Low_vs_High.csv](Summary_COG_categories_Low_vs_High.csv)
+[Check out the file: Summary_COG_categories_G2_vs_G1.csv](Summary_COG_categories_G2_vs_G1.csv)
 ```r
 # A tibble: 21 × 4
    COG_name                                                     Universe    Up  Down
