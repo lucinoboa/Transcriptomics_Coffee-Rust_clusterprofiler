@@ -394,14 +394,21 @@ sum(ora_GOs@result$p.adjust < 0.05)
 ```
 
 # Dotplot de los 10 GO más significativos
+```r
 dotplot(ora_GOs, showCategory = 10)
+```
+![dotplot_G2vsG1_ora-GOs.png](figures/dotplot_G2vsG1_ora-GOs.png)
 
 # Barplot de los 10 GO más significativos
+```r
 barplot(ora_GOs, showCategory = 10)
+```
+![barplot_G2vsG1_ora-GOs.png](figures/barplot_G2vsG1_ora-GOs.png)
+
 
 # Enrichment map (opcional, requiere términos relacionados)
+```r
 ora_GOs <- pairwise_termsim(ora_GOs, method = "JC")
 emapplot(ora_GOs, color = "qvalue", showCategory = 15) ### no esta funcionando, revisar abajo 
-
-
+```
 
