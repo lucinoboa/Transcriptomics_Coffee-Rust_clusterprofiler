@@ -104,7 +104,7 @@ annotation <- read_delim("fullAnnotation.tsv.txt", delim = "\t", col_types = col
 colnames(annotation) <- make.unique(colnames(annotation))
 ```
 
-### Add human-readable COG names
+### Add readable COG names
 ```r
 cog_dict <- c(
   "C" = "Energy production and conversion",
@@ -418,7 +418,7 @@ emapplot(ora_GOs, color = "qvalue", showCategory = 15) ### no esta funcionando, 
 
 ## Part 2: Functional categories 
 
-### Add human-readable COG names
+### Add readable COG names
 ```r
 cog_dict <- c(
   "C"="Energy production and conversion", "D"="Cell cycle control, cell division, chromosome partitioning",
@@ -445,7 +445,7 @@ deg_up_annot <- deg_up %>% left_join(dplyr::select(annotation, gene_id, COG_cate
 deg_down_annot <- deg_down %>% left_join(dplyr::select(annotation, gene_id, COG_category, COG_name), by="gene_id")
 ```
 
-# 7. Summarize functional categories
+## 7. Summarize functional categories
 ```r
 universe_summary <- annotation %>%
   filter(!is.na(COG_name)) %>%
