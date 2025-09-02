@@ -178,3 +178,33 @@ summary_table <- universe_summary %>%
 write_csv(summary_table, "Summary_by_COG_categories_Low_vs_High.csv")
 print(n=21, summary_table)
 ```
+
+[Check out the file: Summary_by_COG_categories_Low_vs_High.csv](Summary_by_COG_categories_Low_vs_High.csv)
+
+```r
+> print(n=21, summary_table)
+# A tibble: 21 × 4
+   COG_name                                                     Universe    Up  Down
+   <chr>                                                           <int> <int> <int>
+ 1 Function unknown                                                13943    21     3
+ 2 Signal transduction mechanisms                                   4176    11     2
+ 3 Replication, recombination and repair                            3998     2     0
+ 4 Posttranslational modification, protein turnover, chaperones     3065     6     0
+ 5 Transcription                                                    2941     3     1
+ 6 Secondary metabolites biosynthesis, transport and catabolism     2059     4     0
+ 7 Carbohydrate transport and metabolism                            1974     3     0
+ 8 Amino acid transport and metabolism                              1621     0     1
+ 9 Translation, ribosomal structure and biogenesis                  1451     0     0
+10 Intracellular trafficking, secretion, vesicular transport        1127     2     0
+11 Lipid transport and metabolism                                   1080     1     0
+12 Energy production and conversion                                  940     0     0
+13 Inorganic ion transport and metabolism                            911     4     0
+14 Cell cycle control, cell division, chromosome partitioning        576     0     0
+15 Coenzyme transport and metabolism                                 533     0     0
+16 Defense mechanisms                                                432     0     0
+17 Cytoskeleton                                                      367     0     0
+18 Nucleotide transport and metabolism                               305     2     0
+19 Cell wall/membrane/envelope biogenesis                            297     2     0
+20 Nuclear structure                                                  13     0     0
+21 Extracellular structures                                            4     0     0
+```
