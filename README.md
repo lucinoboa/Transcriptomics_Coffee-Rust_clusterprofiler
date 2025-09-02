@@ -600,7 +600,7 @@ print(summary_table, n=21)
 
 #### Group_3 vs Group_1
 
-Number of significant GO terms of Group_3 vs Group_1.
+##### Number of significant GO terms of Group_3 vs Group_1.
 ```r
 sum(ora_GOs@result$p.adjust < 0.05)
 ```
@@ -608,26 +608,26 @@ sum(ora_GOs@result$p.adjust < 0.05)
 [1] 8
 ```
 
-Dotplot of the 10 most significant GOs of Group_3 vs Group_1.
+##### Dotplot of the 10 most significant GOs of Group_3 vs Group_1.
 ```r
 dotplot(ora_GOs, showCategory = 10)
 ```
 ![dotplot_G3vsG1_ora-GOs.png](figures/dotplot_G3vsG1_ora-GOs.png)
 
-Barplot of the 10 most significant GOs of Group_3 vs Group_1.
+##### Barplot of the 10 most significant GOs of Group_3 vs Group_1.
 ```r
 barplot(ora_GOs, showCategory = 10)
 ```
 ![barplot_G3vsG1_ora-GOs.png](figures/barplot_G3vsG1_ora-GOs.png)
 
-Enrichment map  of Group_3 vs Group_1. 
+##### Enrichment map  of Group_3 vs Group_1. 
 ```r
 ora_GOs <- pairwise_termsim(ora_GOs, method = "JC")
 emapplot(ora_GOs, color = "qvalue", showCategory = 15) 
 ```
 ![emapplot_G3vsG1.png](figures/emapplot_G3vsG1.png)
 
-Summary of the up and down-regulated genes on different COG_category of Group_3 vs Group_1.
+##### Summary of the up and down-regulated genes on different COG_category of Group_3 vs Group_1.
 ```r
 > print(n=21, summary_table)
 # A tibble: 21 × 4
