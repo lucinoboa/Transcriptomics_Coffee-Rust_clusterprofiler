@@ -90,6 +90,7 @@ write.csv(deg_down, "Down_DEG_Low_vs_High_strict.csv", row.names = FALSE)
 ```
 
 [Check out the file: Up_DEG_Low_vs_High_strict.csv](Up_DEG_Low_vs_High_strict.csv)
+
 [Check out the file: Down_DEG_Low_vs_High_strict.csv](Down_DEG_Low_vs_High_strict.csv)
 
 
