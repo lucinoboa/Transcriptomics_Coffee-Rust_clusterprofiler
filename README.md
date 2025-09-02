@@ -395,13 +395,13 @@ sum(ora_GOs@result$p.adjust < 0.05)
 [1] 21
 ```
 
-# Dotplot de los 10 GO más significativos
+# Dotplot of the 10 more significant GOs
 ```r
 dotplot(ora_GOs, showCategory = 10)
 ```
 ![dotplot_G2vsG1_ora-GOs.png](figures/dotplot_G2vsG1_ora-GOs.png)
 
-# Barplot de los 10 GO más significativos
+# Barplot of the 10 more significant GOs
 ```r
 barplot(ora_GOs, showCategory = 10)
 ```
@@ -413,7 +413,6 @@ barplot(ora_GOs, showCategory = 10)
 ora_GOs <- pairwise_termsim(ora_GOs, method = "JC")
 emapplot(ora_GOs, color = "qvalue", showCategory = 15) ### no esta funcionando, revisar abajo 
 ```
-
 
 
 ## Part 2: Functional categories 
