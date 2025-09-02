@@ -14,6 +14,8 @@ library(DESeq2)       # For differential expression analysis
 library(tidyverse)    # For data manipulation, joining, summarizing
 library(readr)        # Reading CSV/TSV files
 library(dplyr)        # Filtering, summarizing
+library(clusterProfiler) # ORA analysis
+library(DOSE)          # Helper functions for enrichment
 ```
 
 ## 1. Set working directory
@@ -208,3 +210,198 @@ print(n=21, summary_table)
 20 Nuclear structure                                                  13     0     0
 21 Extracellular structures                                            4     0     0
 ```
+
+
+
+
+# Differential Gene Expression Analysis of Royal Coffee Transcriptome: Group_2 vs Group_1
+
+## 0. Load required libraries
+```r
+library(DESeq2)     # For differential expression analysis
+library(tidyverse)  # For data manipulation (optional, useful for merging and plotting)
+library(readr)      # For reading TSV/CSV files
+library(dplyr)      # For filtering and data manipulation
+library(clusterProfiler)  # For enrichment analysis
+library(DOSE)         # Helper functions for enrichment
+library(enrichplot)   # Visualization of enrichment results
+```
+
+## 1. Set working directory
+```r
+setwd("D:/lucianoboa/royatranscriptomics/analysis/featureCounts")
+```
+
+## 2. Load count matrix
+```r
+countData <- read.table("counts_matrix_complete_royatranscriptomics.txt", 
+                        header = TRUE, row.names = 1, sep = "\t")
+
+# Select only count columns (columns 6 to 21)
+countData <- countData[, 6:21]
+
+# Rename columns for simplicity
+colnames(countData) <- c("H10","H11","H12","H13","H14","H15","H16","H9",
+                         "T1","T2","T3","T4","T5","T6","T7","T8")
+```
+
+
+## 3. Define experimental groups
+```r
+group <- rep(NA, ncol(countData))
+names(group) <- colnames(countData)
+
+group[c("T1","T2","T3","T4","T5","T6","T7","T8")] <- "Group_1"
+group[c("H9","H11","H13","H14","H15","H16")] <- "Group_2"
+group[c("H10","H12")] <- "Group_3"
+
+group <- factor(group)
+
+# Create colData for DESeq2
+colData <- data.frame(row.names = colnames(countData),
+                      group = group)
+```
+
+
+## 4. Create DESeq2 dataset
+```r
+dds <- DESeqDataSetFromMatrix(countData = countData, 
+                              colData = colData, 
+                              design = ~ group)
+
+```
+
+
+## 5. Filter low-expression genes
+```r
+dds <- dds[rowSums(counts(dds)) > 10,]
+```
+
+
+## 6. Run DESeq2 differential expression
+```r
+dds <- DESeq(dds)
+```
+
+
+## 7. Extract contrasts / results
+```r
+res_G2vsG1 <- results(dds, contrast = c("group", "Group_2", "Group_1"))
+res_G3vsG1 <- results(dds, contrast = c("group", "Group_3", "Group_1"))
+res_G2vsG3 <- results(dds, contrast = c("group", "Group_2", "Group_3"))
+
+# Order by adjusted p-value
+res_G2vsG1 <- res_G2vsG1[order(res_G2vsG1$padj), ]
+res_G3vsG1 <- res_G3vsG1[order(res_G3vsG1$padj), ]
+res_G2vsG3 <- res_G2vsG3[order(res_G2vsG3$padj), ]
+```
+
+## 8. Extract DEGs with strict filtering
+```r
+deg_G2vsG1 <- subset(res_G2vsG1, padj < 0.05 & abs(log2FoldChange) > 1)
+deg_G3vsG1 <- subset(res_G3vsG1, padj < 0.05 & abs(log2FoldChange) > 1)
+deg_G2vsG3 <- subset(res_G2vsG3, padj < 0.05 & abs(log2FoldChange) > 1)
+```
+
+
+## 9. Export DEGs
+```r
+# G2 vs G1
+write.csv(deg_G2vsG1, file = "DEG_G2_vs_G1_strict.csv")
+write.csv(subset(deg_G2vsG1, log2FoldChange > 1), file = "Up_DEG_G2_vs_G1_strict.csv")
+write.csv(subset(deg_G2vsG1, log2FoldChange < -1), file = "Down_DEG_G2_vs_G1_strict.csv")
+
+# G3 vs G1
+write.csv(deg_G3vsG1, file = "DEG_G3_vs_G1_strict.csv")
+write.csv(subset(deg_G3vsG1, log2FoldChange > 1), file = "Up_DEG_G3_vs_G1_strict.csv")
+write.csv(subset(deg_G3vsG1, log2FoldChange < -1), file = "Down_DEG_G3_vs_G1_strict.csv")
+
+# G2 vs G3
+write.csv(deg_G2vsG3, file = "DEG_G2_vs_G3_strict.csv")
+write.csv(subset(deg_G2vsG3, log2FoldChange > 1), file = "Up_DEG_G2_vs_G3_strict.csv")
+write.csv(subset(deg_G2vsG3, log2FoldChange < -1), file = "Down_DEG_G2_vs_G3_strict.csv")
+```
+
+## 10. Load DEGs
+```r
+diff_genes <- read_delim("Up_DEG_G2_vs_G1_strict.csv", delim = ",")
+colnames(diff_genes)[1] <- "gene_id"       # Rename first column
+diff_genes <- diff_genes[, c("gene_id", "log2FoldChange")]
+```
+
+
+## 11. Load full annotation file (LOC IDs)
+```r
+annotation <- read_delim("fullAnnotation.tsv.txt", delim = "\t", col_types = cols())
+```
+
+Assume at least these columns exist: "gene_id" (LOC###), "GO", "description"
+
+## 12. Filter annotation for DEGs
+```r
+deg_annot <- annotation %>%
+  filter(gene_id %in% diff_genes$gene_id)
+# Split multiple GO terms separated by ";" and create vector
+deg_genes_GO <- deg_annot$GOs %>%
+  strsplit(split = ";") %>%
+  unlist() %>%
+  unique()
+```
+
+
+## 13. Define universe of genes (all detected genes)
+```r
+all_genes <- annotation$gene_id
+all_genes_GOs <- annotation$GOs %>%
+  strsplit(split = ";") %>%
+  unlist() %>%
+  unique()
+```
+
+## 14. Perform Over-Representation Analysis (ORA) with clusterProfiler
+```r
+ora_GOs <- enricher(
+  gene = deg_genes_GO,
+  universe = all_genes_GOs,
+  pAdjustMethod = "BH",
+  qvalueCutoff = 0.05,
+  TERM2GENE = annotation[, c("GOs", "gene_id")],    # Map GO → gene
+  TERM2NAME = annotation[, c("GOs", "Description")] # Optional, GO names
+)
+
+deg_gene_ids <- deg_annot$gene_id
+term2gene <- annotation[, c("GOs", "gene_id")]  # ajusta "GOs" al nombre exacto de tu columna GO
+term2name <- annotation[, c("GOs", "Description")]  # opcional
+
+ora_GOs <- enricher(
+  gene = deg_gene_ids,         # vector de genes, no GO
+  universe = all_genes,        # vector de todos los genes detectados
+  pAdjustMethod = "BH",
+  qvalueCutoff = 0.05,
+  TERM2GENE = term2gene,
+  TERM2NAME = term2name
+)
+```
+
+## 15. Results. 
+```r
+# Number of significant GO terms.
+sum(ora_GOs@result$p.adjust < 0.05)
+```
+
+```r
+[1] 21
+```
+
+# Dotplot de los 10 GO más significativos
+dotplot(ora_GOs, showCategory = 10)
+
+# Barplot de los 10 GO más significativos
+barplot(ora_GOs, showCategory = 10)
+
+# Enrichment map (opcional, requiere términos relacionados)
+ora_GOs <- pairwise_termsim(ora_GOs, method = "JC")
+emapplot(ora_GOs, color = "qvalue", showCategory = 15) ### no esta funcionando, revisar abajo 
+
+
+
