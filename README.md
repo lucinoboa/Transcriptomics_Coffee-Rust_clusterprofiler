@@ -395,13 +395,13 @@ sum(ora_GOs@result$p.adjust < 0.05)
 [1] 21
 ```
 
-# Dotplot of the 10 more significant GOs
+# Dotplot of the 10 most significant GOs
 ```r
 dotplot(ora_GOs, showCategory = 10)
 ```
 ![dotplot_G2vsG1_ora-GOs.png](figures/dotplot_G2vsG1_ora-GOs.png)
 
-# Barplot of the 10 more significant GOs
+# Barplot of the 10 most significant GOs
 ```r
 barplot(ora_GOs, showCategory = 10)
 ```
