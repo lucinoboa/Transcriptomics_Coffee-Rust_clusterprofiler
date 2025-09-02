@@ -8,6 +8,8 @@ This project presents a comprehensive workflow for analyzing transcriptomic data
 - Annotating DEGs with functional categories (COG) using a custom annotation file.
 - Generating a summarized functional table comparing up- and down-regulated genes across categories.
 
+## Part 1: Functional Categories. 
+
 ## 0. Load required libraries.
 ```r
 library(DESeq2)       # For differential expression analysis
@@ -65,7 +67,7 @@ dds <- dds[rowSums(counts(dds)) > 10, ]
 dds <- DESeq(dds)
 ```
 
-# 5. Extract results for Low vs High Severity
+## 5. Extract results for Low vs High Severity
 ```r
 res_Low_vs_High <- results(dds, contrast = c("group", "Low_Severity", "High_Severity"))
 res_Low_vs_High <- res_Low_vs_High[order(res_Low_vs_High$padj), ]
@@ -79,7 +81,7 @@ write.csv(deg, "DEG_Low_vs_High_strict.csv")
 [Check out the file: DEG_Low_vs_High_strict.csv](DEG_Low_vs_High_strict.csv)
 
 
-# 6. Separate up- and down-regulated DEGs
+## 6. Separate up- and down-regulated DEGs
 ```r
 deg_df <- as.data.frame(deg)
 deg_df$gene_id <- rownames(deg_df)
@@ -137,7 +139,7 @@ annotation <- annotation %>%
   mutate(COG_name = cog_dict[COG_category])
 ```
 
-## 6. Annotate DEGs with COG
+## 8. Annotate DEGs with COG
 ```r
 deg_up <- as_tibble(deg_up)
 deg_down <- as_tibble(deg_down)
@@ -148,7 +150,7 @@ deg_down_annot <- deg_down %>%
   left_join(dplyr::select(annotation, gene_id, COG_category, COG_name), by = "gene_id")
 ```
 
-# 7. Summarize functional categories
+## 9. Summarize functional categories
 ```r
 # Universe
 universe_summary <- annotation %>%
@@ -211,10 +213,100 @@ print(n=21, summary_table)
 21 Extracellular structures                                            4     0     0
 ```
 
+## Part 2: Over-Representation Analysis 
+
+## Load required libraries
+```r
+library(tidyverse)    # For data manipulation
+library(clusterProfiler)  # For enrichment analysis
+library(DOSE)         # Helper functions for enrichment
+library(enrichplot)   # Visualization of enrichment results
+```
+
+## Load Up-Regulated Genes for Low vs High Severity at 24 Hours. 
+```r
+diff_genes <- read_delim("Up_DEG_Low_H24vsHigh_H24_strict.csv", delim = ",")
+colnames(diff_genes)[1] <- "gene_id"       # Rename first column
+diff_genes <- diff_genes[, c("gene_id", "log2FoldChange")]
+```
+
+## Load full annotation file (LOC IDs).
+```r
+annotation <- read_delim("fullAnnotation.tsv.txt", delim = "\t", col_types = cols())
+# Assume at least these columns exist: "gene_id" (LOC###), "GOs", "description"
+```
+
+## Filter annotation for DEGs
+```r
+deg_annot <- annotation %>%
+  filter(gene_id %in% diff_genes$gene_id)
+# Split multiple GO terms separated by ";" and create vector
+deg_genes_GO <- deg_annot$GOs %>%
+  strsplit(split = ";") %>%
+  unlist() %>%
+  unique()
+```
+
+## Define universe of genes (all detected genes)
+```r
+all_genes <- annotation$gene_id
+all_genes_GOs <- annotation$GOs %>%
+  strsplit(split = ";") %>%
+  unlist() %>%
+  unique()
+```
+
+## Perform Over-Representation Analysis (ORA)
+```r
+deg_gene_ids <- deg_annot$gene_id
+term2gene <- annotation[, c("GOs", "gene_id")]  # ajusta "GOs" al nombre exacto de tu columna GO
+term2name <- annotation[, c("GOs", "Description")]  # opcional
+
+ora_GOs <- enricher(
+  gene = deg_gene_ids,         # vector de genes, no GO
+  universe = all_genes,        # vector de todos los genes detectados
+  pAdjustMethod = "BH",
+  qvalueCutoff = 0.05,
+  TERM2GENE = term2gene,
+  TERM2NAME = term2name
+)
+```
+## Number of significant GOs of High vs Low Severity at H24. 
+```r
+sum(ora_GOs@result$p.adjust < 0.05)
+```
+```r
+[1] 21
+```
+
+## Dotplot of the 10 most significant GOs of High vs Low Severity at H24. 
+```r
+dotplot(ora_GOs, showCategory = 10,  title= "The 10 most significant GO terms in Low vs High at H24")
+```
+![dotplot_low-vs-high_H24_ora-GOs.png](figures/dotplot_low-vs-high_H24_ora-GOs.png)
+
+## Barplot of the 10 most significant GOs of High vs Low Severity at H24. 
+```r
+barplot(ora_GOs, showCategory = 10,  title= "The 10 most significant GO terms in Low vs High at H24")
+```
+
+![barplot_low-vs-high_H24_ora-GOs](figures/barplot_low-vs-high_H24_ora-GOs.png)
+
+## Enrichment map of High vs Low Severity at H24. 
+```r
+ora_GOs <- pairwise_termsim(ora_GOs, method = "JC")
+emapplot(ora_GOs, color = "qvalue", showCategory = 15)
+```
+
+### !!! no está saliendo 
+```r
+Error en i_set_vertex_attr(x, attr(value, "name"), index = value, value = attr(value, : 
+  Length of new attribute value must be 1 or 14, the number of target vertices, not 15
+```
 
 
 
-# Differential Gene Expression Analysis of Coffee Transcriptome: Experimental Groups
+# Differential Gene Expression Analysis of Coffee Transcriptome: Groups
 ## Complete example of Group_2 vs Group_1
 
 ## Part 1: Over-Representation Analysis
@@ -283,7 +375,6 @@ dds <- dds[rowSums(counts(dds)) > 10,]
 ```r
 dds <- DESeq(dds)
 ```
-
 
 ## 7. Extract contrasts / results
 ```r
