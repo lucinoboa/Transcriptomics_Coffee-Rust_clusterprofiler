@@ -411,7 +411,7 @@ barplot(ora_GOs, showCategory = 10)
 # Enrichment map 
 ```r
 ora_GOs <- pairwise_termsim(ora_GOs, method = "JC")
-emapplot(ora_GOs, color = "qvalue", showCategory = 15) ### no esta funcionando, revisar abajo 
+emapplot(ora_GOs, color = "qvalue", showCategory = 15) ### no esta funcionando
 ```
 
 
@@ -501,3 +501,165 @@ print(summary_table, n=21)
 20 Nuclear structure                                                  13     1     3
 21 Extracellular structures                                            4     0     1
 ```
+
+
+
+# Differential Gene Expression Analysis of Royal Coffee Transcriptome: Group_3 vs Group_1
+
+## Part 1: Over-Representation Analysis
+
+## 10. Load DEGs
+```r
+diff_genes <- read_delim("Up_DEG_G3_vs_G1_strict.csv", delim = ",")
+colnames(diff_genes)[1] <- "gene_id"       # Rename first column
+diff_genes <- diff_genes[, c("gene_id", "log2FoldChange")]
+```
+
+
+## 11. Load full annotation file (LOC IDs)
+```r
+annotation <- read_delim("fullAnnotation.tsv.txt", delim = "\t", col_types = cols())
+```
+
+Assume at least these columns exist: "gene_id" (LOC###), "GO", "description"
+
+## 12. Filter annotation for DEGs
+```r
+deg_annot <- annotation %>%
+  filter(gene_id %in% diff_genes$gene_id)
+# Split multiple GO terms separated by ";" and create vector
+deg_genes_GO <- deg_annot$GOs %>%
+  strsplit(split = ";") %>%
+  unlist() %>%
+  unique()
+```
+
+
+## 13. Define universe of genes (all detected genes)
+```r
+all_genes <- annotation$gene_id
+all_genes_GOs <- annotation$GOs %>%
+  strsplit(split = ";") %>%
+  unlist() %>%
+  unique()
+```
+
+## 14. Perform Over-Representation Analysis (ORA) with clusterProfiler
+```r
+ora_GOs <- enricher(
+  gene = deg_genes_GO,
+  universe = all_genes_GOs,
+  pAdjustMethod = "BH",
+  qvalueCutoff = 0.05,
+  TERM2GENE = annotation[, c("GOs", "gene_id")],    # Map GO → gene
+  TERM2NAME = annotation[, c("GOs", "Description")] # Optional, GO names
+)
+
+deg_gene_ids <- deg_annot$gene_id
+term2gene <- annotation[, c("GOs", "gene_id")]  # ajusta "GOs" al nombre exacto de tu columna GO
+term2name <- annotation[, c("GOs", "Description")]  # opcional
+
+ora_GOs <- enricher(
+  gene = deg_gene_ids,         # vector de genes, no GO
+  universe = all_genes,        # vector de todos los genes detectados
+  pAdjustMethod = "BH",
+  qvalueCutoff = 0.05,
+  TERM2GENE = term2gene,
+  TERM2NAME = term2name
+)
+```
+
+## 15. Results. 
+```r
+# Number of significant GO terms.
+sum(ora_GOs@result$p.adjust < 0.05)
+```
+
+```r
+[1] 8
+```
+
+# Dotplot of the 10 most significant GOs
+```r
+dotplot(ora_GOs, showCategory = 10)
+```
+![dotplot_G3vsG1_ora-GOs.png](figures/dotplot_G3vsG1_ora-GOs.png)
+
+# Barplot of the 10 most significant GOs
+```r
+barplot(ora_GOs, showCategory = 10)
+```
+![barplot_G3vsG1_ora-GOs.png](figures/barplot_G3vsG1_ora-GOs.png)
+
+
+# Enrichment map 
+```r
+ora_GOs <- pairwise_termsim(ora_GOs, method = "JC")
+emapplot(ora_GOs, color = "qvalue", showCategory = 15) 
+```
+![emapplot_G3vsG1.png](figures/emapplot_G3vsG1.png)
+
+## Part 2: Functional categories 
+
+### Add readable COG names
+```r
+cog_dict <- c(
+  "C"="Energy production and conversion", "D"="Cell cycle control, cell division, chromosome partitioning",
+  "E"="Amino acid transport and metabolism", "F"="Nucleotide transport and metabolism",
+  "G"="Carbohydrate transport and metabolism", "H"="Coenzyme transport and metabolism",
+  "I"="Lipid transport and metabolism", "J"="Translation, ribosomal structure and biogenesis",
+  "K"="Transcription", "L"="Replication, recombination and repair",
+  "M"="Cell wall/membrane/envelope biogenesis", "N"="Cell motility",
+  "O"="Posttranslational modification, protein turnover, chaperones",
+  "P"="Inorganic ion transport and metabolism", "Q"="Secondary metabolites biosynthesis, transport and catabolism",
+  "R"="General function prediction only", "S"="Function unknown",
+  "T"="Signal transduction mechanisms", "U"="Intracellular trafficking, secretion, vesicular transport",
+  "V"="Defense mechanisms", "W"="Extracellular structures", "Y"="Nuclear structure", "Z"="Cytoskeleton"
+)
+
+# Add readable COG name
+annotation <- annotation %>%
+  mutate(COG_name = cog_dict[COG_category])
+```
+
+## 6. Annotate DEGs with COG
+```r
+deg_up_annot <- deg_up %>% left_join(dplyr::select(annotation, gene_id, COG_category, COG_name), by="gene_id")
+deg_down_annot <- deg_down %>% left_join(dplyr::select(annotation, gene_id, COG_category, COG_name), by="gene_id")
+```
+
+## 7. Summarize functional categories
+```r
+universe_summary <- annotation %>%
+  filter(!is.na(COG_name)) %>%
+  group_by(COG_name) %>%
+  summarise(Universe = n_distinct(gene_id))
+
+up_summary <- deg_up_annot %>%
+  filter(!is.na(COG_name)) %>%
+  group_by(COG_name) %>%
+  summarise(Up = n_distinct(gene_id))
+
+down_summary <- deg_down_annot %>%
+  filter(!is.na(COG_name)) %>%
+  group_by(COG_name) %>%
+  summarise(Down = n_distinct(gene_id))
+```
+
+### Merge summaries
+```r
+summary_table <- universe_summary %>%
+  full_join(up_summary, by="COG_name") %>%
+  full_join(down_summary, by="COG_name") %>%
+  replace(is.na(.), 0) %>%
+  arrange(desc(Universe))
+
+write_csv(summary_table, "Summary_COG_categories_G3_vs_G1.csv")
+print(summary_table, n=21)
+```
+
+[Check out the file: Summary_COG_categories_G3_vs_G1.csv](Summary_COG_categories_G3_vs_G1.csv)
+```r
+
+```
+
