@@ -190,25 +190,25 @@ print(n=21, summary_table)
 # A tibble: 21 × 4
    COG_name                                                     Universe    Up  Down
    <chr>                                                           <int> <int> <int>
- 1 Function unknown                                                13943    21     3
- 2 Signal transduction mechanisms                                   4176    11     2
- 3 Replication, recombination and repair                            3998     2     0
- 4 Posttranslational modification, protein turnover, chaperones     3065     6     0
- 5 Transcription                                                    2941     3     1
- 6 Secondary metabolites biosynthesis, transport and catabolism     2059     4     0
- 7 Carbohydrate transport and metabolism                            1974     3     0
- 8 Amino acid transport and metabolism                              1621     0     1
- 9 Translation, ribosomal structure and biogenesis                  1451     0     0
-10 Intracellular trafficking, secretion, vesicular transport        1127     2     0
-11 Lipid transport and metabolism                                   1080     1     0
-12 Energy production and conversion                                  940     0     0
-13 Inorganic ion transport and metabolism                            911     4     0
-14 Cell cycle control, cell division, chromosome partitioning        576     0     0
-15 Coenzyme transport and metabolism                                 533     0     0
-16 Defense mechanisms                                                432     0     0
-17 Cytoskeleton                                                      367     0     0
-18 Nucleotide transport and metabolism                               305     2     0
-19 Cell wall/membrane/envelope biogenesis                            297     2     0
+ 1 Function unknown                                                13943   105   294
+ 2 Signal transduction mechanisms                                   4176    47    62
+ 3 Replication, recombination and repair                            3998     7    11
+ 4 Posttranslational modification, protein turnover, chaperones     3065    34    62
+ 5 Transcription                                                    2941    43    32
+ 6 Secondary metabolites biosynthesis, transport and catabolism     2059    38    57
+ 7 Carbohydrate transport and metabolism                            1974    25    63
+ 8 Amino acid transport and metabolism                              1621    20    26
+ 9 Translation, ribosomal structure and biogenesis                  1451     6    40
+10 Intracellular trafficking, secretion, vesicular transport        1127    13    17
+11 Lipid transport and metabolism                                   1080    11    31
+12 Energy production and conversion                                  940     8    52
+13 Inorganic ion transport and metabolism                            911    14    20
+14 Cell cycle control, cell division, chromosome partitioning        576     1     1
+15 Coenzyme transport and metabolism                                 533     0    16
+16 Defense mechanisms                                                432     6    10
+17 Cytoskeleton                                                      367     3    16
+18 Nucleotide transport and metabolism                               305     2    12
+19 Cell wall/membrane/envelope biogenesis                            297     2    17
 20 Nuclear structure                                                  13     0     0
 21 Extracellular structures                                            4     0     0
 ```
@@ -289,7 +289,6 @@ dotplot(ora_GOs, showCategory = 10,  title= "The 10 most significant GO terms in
 ```r
 barplot(ora_GOs, showCategory = 10,  title= "The 10 most significant GO terms in Low vs High at H24")
 ```
-
 ![barplot_low-vs-high_H24_ora-GOs](figures/barplot_low-vs-high_H24_ora-GOs.png)
 
 ## Enrichment map of High vs Low Severity at H24. 
@@ -297,13 +296,7 @@ barplot(ora_GOs, showCategory = 10,  title= "The 10 most significant GO terms in
 ora_GOs <- pairwise_termsim(ora_GOs, method = "JC")
 emapplot(ora_GOs, color = "qvalue", showCategory = 15)
 ```
-
-### !!! no está saliendo 
-```r
-Error en i_set_vertex_attr(x, attr(value, "name"), index = value, value = attr(value, : 
-  Length of new attribute value must be 1 or 14, the number of target vertices, not 15
-```
-
+![emapplot_low_vs_high_H24.png](figures/emapplot_low_vs_high_H24.png)
 
 
 # Differential Gene Expression Analysis of Coffee Transcriptome: Groups
