@@ -655,3 +655,45 @@ emapplot(ora_GOs, color = "qvalue", showCategory = 15)
 20 Nuclear structure                                                  13     0     0
 21 Extracellular structures                                            4     0     0
 ```
+#### Group_2 vs Group_3
+
+##### Dotplot of the 10 most significant GOs of Group_2 vs Group_3.
+
+![dotplot](figures/dotplot_G2vsG3_ora-GOs.png)
+
+##### Barplot of the 10 most significant GOs of Group_2 vs Group_3.
+
+![barplot_G2vsG3_ora-GOs.png](figures/barplot_G2vsG3_ora-GOs.png)
+
+##### Emapplot of Group_2 vs Group_3.
+
+![emapplot_G2vsG3.png](figures/emapplot_G2vsG3.png)
+
+##### Summary of the up and down-regulated genes on different COG_category of Group_2 vs Group_3.
+```r
+> print(n=21, summary_table)
+# A tibble: 21 × 4
+   COG_name                                                     Universe    Up  Down
+   <chr>                                                           <int> <int> <int>
+ 1 Function unknown                                                13943   105   294
+ 2 Signal transduction mechanisms                                   4176    47    62
+ 3 Replication, recombination and repair                            3998     7    11
+ 4 Posttranslational modification, protein turnover, chaperones     3065    34    62
+ 5 Transcription                                                    2941    43    32
+ 6 Secondary metabolites biosynthesis, transport and catabolism     2059    38    57
+ 7 Carbohydrate transport and metabolism                            1974    25    63
+ 8 Amino acid transport and metabolism                              1621    20    26
+ 9 Translation, ribosomal structure and biogenesis                  1451     6    40
+10 Intracellular trafficking, secretion, vesicular transport        1127    13    17
+11 Lipid transport and metabolism                                   1080    11    31
+12 Energy production and conversion                                  940     8    52
+13 Inorganic ion transport and metabolism                            911    14    20
+14 Cell cycle control, cell division, chromosome partitioning        576     1     1
+15 Coenzyme transport and metabolism                                 533     0    16
+16 Defense mechanisms                                                432     6    10
+17 Cytoskeleton                                                      367     3    16
+18 Nucleotide transport and metabolism                               305     2    12
+19 Cell wall/membrane/envelope biogenesis                            297     2    17
+20 Nuclear structure                                                  13     0     0
+21 Extracellular structures                                            4     0     0
+```
