@@ -283,13 +283,13 @@ sum(ora_GOs@result$p.adjust < 0.05)
 ```r
 dotplot(ora_GOs, showCategory = 10,  title= "The 10 most significant GO terms in Low vs High at H24")
 ```
-![dotplot_low-vs-high_H24_ora-GOs.png](figures/dotplot_low-vs-high_H24_ora-GOs.png)
+![dotplot_low-vs-high_H24_ora-GOs.png](figures/dotplot_lowVShigh_H24.png)
 
 ## Barplot of the 10 most significant GOs of High vs Low Severity at H24. 
 ```r
 barplot(ora_GOs, showCategory = 10,  title= "The 10 most significant GO terms in Low vs High at H24")
 ```
-![barplot_low-vs-high_H24_ora-GOs](figures/barplot_low-vs-high_H24_ora-GOs.png)
+![barplot_low-vs-high_H24_ora-GOs](figures/barplot_lowVShigh_H24.png)
 
 ## Enrichment map of High vs Low Severity at H24. 
 ```r
