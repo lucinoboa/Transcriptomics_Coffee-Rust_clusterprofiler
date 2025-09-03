@@ -271,7 +271,7 @@ ora_GOs <- enricher(
   TERM2NAME = term2name
 )
 ```
-## Number of significant GOs of High vs Low Severity at H24. 
+## Number of significant GOs of Lox vs High Severity at H24. 
 ```r
 sum(ora_GOs@result$p.adjust < 0.05)
 ```
